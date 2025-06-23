@@ -1,0 +1,170 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* background-color: #1f1f1f; */
+    color: white;
+    font-family: Arial, sans-serif;
+    padding: 0;
+}
+
+.header {
+    background-color: rgb(116, 116, 116);
+    height: 7vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10%;
+}
+
+.logo {
+    font-size: min(4vw, 30px);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.links {
+    display: flex;
+    gap: 30px;
+}
+
+a {
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+    font-size: min(3vw, 16px);
+    white-space: nowrap;
+}
+
+a:hover {
+    color: blue;
+}
+
+@media (max-width: 600px) {
+    .header {
+        padding: 0 3%;
+    }
+
+    .links {
+        gap: 10px;
+    }
+}
+
+/* --- Контент --- */
+.main-content {
+    padding: 20px 10%;
+}
+
+.accounts-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.account-card, .add-card {
+    background-color: #d9d9d9;
+    border-radius: 15px;
+    width: 200px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    color: black;
+    font-size: 16px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.add-card {
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    cursor: pointer;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-actions span {
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.account-sum {
+    font-size: 18px;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.popup-form {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.form-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    color: black;
+    width: 300px;
+}
+
+.form-content input {
+    padding: 10px;
+    font-size: 16px;
+}
+
+.form-content button {
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.form-content button:last-child {
+    background-color: #ccc;
+}
+.transaction-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.transaction-buttons button {
+    flex: 1;
+    margin: 0 5px;
+    padding: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    background-color: #5bbf5b;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.transaction-buttons button:nth-child(2) {
+    background-color: #e15b5b;
+}
+
+.transaction-buttons button:hover {
+    opacity: 0.9;
+}

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="chekc.css" />
+  <title>Счета</title>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">FinanceTracker</div>
+    <div class="links">
+      <div class="Profil"><a href="profil.html">Профиль</a></div>
+      <div class="Chekc"><a href="chekc.html">Счета</a></div>
+      <a href="goals.html">Цели</a>
+      <div class="Transaction"><a href="transaction.html">Транзакции</a></div>
+      <div class="Otchet"><a href="otchet.html">Отчеты</a></div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <h1>Счета</h1>
+    <div class="accounts-container" id="accountsContainer">
+      <!-- Примеры карточек -->
+      <div class="account-card">
+        <div class="card-header">
+          <span class="account-name">Наличные</span>
+          <div class="card-actions">
+            <span class="edit" onclick="editCard(this)">✎</span>
+            <span class="delete" onclick="deleteCard(this)">🗑</span>
+          </div>
+        </div>
+        <div class="account-sum">10000 ₽</div>
+        <div class="transaction-buttons">
+          <button onclick="addIncome(this)">Транзакции</button>
+        </div>
+      </div>
+
+      <div class="add-card" onclick="addCard()">+</div>
+    </div>
+  </div>
+
+  <!-- Модалка добавления / редактирования -->
+  <div class="popup-form" id="popupForm">
+    <div class="form-content">
+      <input type="text" id="accountName" placeholder="Название счета" />
+      <input type="number" id="accountSum" placeholder="Сумма" />
+      <button onclick="saveCard()">Сохранить</button>
+      <button onclick="closeForm()">Отмена</button>
+    </div>
+  </div>
+
+  <!-- Модалка для дохода/расхода -->
+  <div class="popup-form" id="transactionForm">
+    <div class="form-content">
+      <input type="number" id="transactionAmount" placeholder="Сумма" />
+      <button onclick="confirmTransaction(true)">Добавить доход</button>
+      <button onclick="confirmTransaction(false)">Добавить расход</button>
+      <button onclick="closeTransactionForm()">Отмена</button>
+    </div>
+  </div>
+
+  <script>
+    let editingCard = null;
+    let transactionTarget = null;
+    let isAddingIncome = true;
+
+    function openForm(name = "", sum = "") {
+      document.getElementById("popupForm").style.display = "flex";
+      document.getElementById("accountName").value = name;
+      document.getElementById("accountSum").value = sum;
+    }
+
+    function closeForm() {
+      document.getElementById("popupForm").style.display = "none";
+      editingCard = null;
+    }
+
+    function addCard() {
+      openForm();
+    }
+
+    function saveCard() {
+      const name = document.getElementById("accountName").value.trim();
+      const sum = document.getElementById("accountSum").value;
+
+      if (!name || !sum) {
+        alert("Заполни оба поля");
+        return;
+      }
+
+      const formattedSum = `${parseInt(sum).toLocaleString("ru-RU")} ₽`;
+
+      if (editingCard) {
+        editingCard.querySelector(".account-name").textContent = name;
+        editingCard.querySelector(".account-sum").textContent = formattedSum;
+      } else {
+        const container = document.getElementById("accountsContainer");
+        const card = document.createElement("div");
+        card.className = "account-card";
+        card.innerHTML = `
+          <div class="card-header">
+            <span class="account-name">${name}</span>
+            <div class="card-actions">
+              <span class="edit" onclick="editCard(this)">✎</span>
+              <span class="delete" onclick="deleteCard(this)">🗑</span>
+            </div>
+          </div>
+          <div class="account-sum">${formattedSum}</div>
+          <div class="transaction-buttons">
+            <button onclick="addIncome(this)">+ Доход</button>
+            <button onclick="addExpense(this)">- Расход</button>
+          </div>
+        `;
+        container.insertBefore(card, container.lastElementChild);
+      }
+
+      closeForm();
+    }
+
+    function editCard(btn) {
+      editingCard = btn.closest(".account-card");
+      const name = editingCard.querySelector(".account-name").textContent;
+      const sumText = editingCard.querySelector(".account-sum").textContent;
+      const sum = parseInt(sumText.replace(/\D/g, ""));
+      openForm(name, sum);
+    }
+
+    function deleteCard(btn) {
+      const card = btn.closest(".account-card");
+      if (confirm("Удалить этот счет?")) {
+        card.remove();
+      }
+    }
+
+    function addIncome(btn) {
+      transactionTarget = btn.closest(".account-card");
+      isAddingIncome = true;
+      document.getElementById("transactionForm").style.display = "flex";
+    }
+
+    function addExpense(btn) {
+      transactionTarget = btn.closest(".account-card");
+      isAddingIncome = false;
+      document.getElementById("transactionForm").style.display = "flex";
+    }
+
+    function confirmTransaction(isIncome) {
+      const amount = parseInt(document.getElementById("transactionAmount").value);
+      if (isNaN(amount) || amount <= 0) {
+        alert("Введите корректную сумму");
+        return;
+      }
+
+      const sumEl = transactionTarget.querySelector(".account-sum");
+      let currentSum = parseInt(sumEl.textContent.replace(/\D/g, ""));
+
+      if (isIncome) {
+        currentSum += amount;
+      } else {
+        if (amount > currentSum) {
+          alert("Недостаточно средств");
+          return;
+        }
+        currentSum -= amount;
+      }
+
+      sumEl.textContent = `${currentSum.toLocaleString("ru-RU")} ₽`;
+      closeTransactionForm();
+    }
+
+    function closeTransactionForm() {
+      document.getElementById("transactionForm").style.display = "none";
+      transactionTarget = null;
+      document.getElementById("transactionAmount").value = "";
+    }
+    async function confirmTransaction(isIncome) {
+    const amount = parseFloat(document.getElementById('transactionAmount').value);
+    if (isNaN(amount) || amount <= 0) {
+        alert("Введите корректную сумму");
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/transactions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                account_id: transactionTarget.dataset.id,
+                amount: amount,
+                type: isIncome ? 'income' : 'expense',
+                description: prompt('Введите описание транзакции:') || ''
+            })
+        });
+
+        if (!response.ok) throw new Error('Ошибка создания транзакции');
+
+        // Обновляем баланс счета
+        const sumEl = transactionTarget.querySelector('.account-sum');
+        let currentSum = parseFloat(sumEl.textContent.replace(/[^\d.]/g, ''));
+        
+        if (isIncome) {
+            currentSum += amount;
+        } else {
+            currentSum -= amount;
+        }
+
+        sumEl.textContent = `${currentSum.toLocaleString('ru-RU')} ₽`;
+        closeTransactionForm();
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message);
+    }
+}
+  </script>
+</body>
+</html>

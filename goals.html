@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Цели</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+
+    body {
+      background-color: #f4f4f4;
+    }
+
+    .header {
+      background-color: #747474;
+      height: 7vh;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 10%;
+      color: white;
+    }
+
+    .logo {
+      font-size: min(4vw, 30px);
+      font-weight: 700;
+    }
+
+    .links {
+      display: flex;
+      gap: 30px;
+    }
+
+    a {
+      color: white;
+      text-decoration: none;
+      font-size: min(3vw, 16px);
+      white-space: nowrap;
+    }
+
+    a:hover {
+      color: #00d0ff;
+    }
+
+    .main-content {
+      padding: 20px 10%;
+    }
+
+    .goals-container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .goal-card, .add-goal {
+      background: #d9d9d9;
+      padding: 20px;
+      border-radius: 15px;
+      width: 240px;
+      position: relative;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .add-goal {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .goal-card h3 {
+      margin-bottom: 10px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      background: #eee;
+      height: 12px;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0;
+      background: #3d41d1;
+      transition: width 0.5s ease;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+    }
+
+    .goal-actions {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .goal-actions button {
+      padding: 4px 8px;
+      border: none;
+      background: #444;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .popup-form {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 300px;
+    }
+
+    .form-content input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .form-content button {
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #3d41d1;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">FinanceTracker</div>
+    <div class="links">
+      <a href="profil.html">Профиль</a>
+      <a href="chekc.html">Счета</a>
+      <a href="goals.html">Цели</a>
+      <a href="transaction.html">Транзакции</a>
+      <a href="otchet.html">Отчеты</a>
+    </div>
+  </div>
+
+  <main class="main-content">
+    <h1>Цели</h1>
+    <div class="goals-container" id="goalsContainer">
+      <div class="add-goal" onclick="openGoalForm()">+ Добавить цель</div>
+    </div>
+  </main>
+
+  <!-- Модалка -->
+  <div class="popup-form" id="goalForm">
+    <div class="form-content">
+      <input type="text" id="goalTitle" placeholder="Название цели" />
+      <input type="number" id="goalTarget" placeholder="Фин. цель" />
+      <button onclick="saveGoal()">Сохранить</button>
+      <button onclick="closeGoalForm()" style="background:#888;">Отмена</button>
+    </div>
+  </div>
+
+  <script>
+    const goalsContainer = document.getElementById('goalsContainer');
+    const goalForm = document.getElementById('goalForm');
+    let editingGoal = null;
+
+    function openGoalForm(goalEl = null) {
+      editingGoal = goalEl;
+      if (goalEl) {
+        document.getElementById('goalTitle').value = goalEl.querySelector('.goal-title').textContent;
+        document.getElementById('goalTarget').value = goalEl.dataset.target;
+      } else {
+        document.getElementById('goalTitle').value = '';
+        document.getElementById('goalTarget').value = '';
+      }
+      goalForm.style.display = 'flex';
+    }
+
+    function closeGoalForm() {
+      goalForm.style.display = 'none';
+      editingGoal = null;
+    }
+
+    function saveGoal() {
+      const title = document.getElementById('goalTitle').value.trim();
+      const target = +document.getElementById('goalTarget').value;
+      if (!title || target <= 0) {
+        alert('Введите корректные данные');
+        return;
+      }
+
+      let card;
+      if (editingGoal) {
+        card = editingGoal;
+        card.querySelector('.goal-title').textContent = title;
+        card.dataset.target = target;
+      } else {
+        card = document.createElement('div');
+        card.className = 'goal-card';
+        card.dataset.current = 0;
+        card.innerHTML = `
+          <h3 class="goal-title">${title}</h3>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill"></div>
+          </div>
+          <div class="progress-info">
+            <span class="current-amount">0 ₽</span>
+            <span class="goal-amount">${target.toLocaleString('ru-RU')} ₽</span>
+          </div>
+          <div class="goal-actions">
+            <button onclick="addFunds(this)">+ Внести</button>
+            <button onclick="editThisGoal(this)">✎</button>
+            <button onclick="deleteGoal(this)">🗑</button>
+          </div>
+        `;
+        card.dataset.title = title;
+        card.dataset.target = target;
+        goalsContainer.insertBefore(card, goalsContainer.querySelector('.add-goal'));
+      }
+
+      updateProgress(card);
+      closeGoalForm();
+    }
+
+    function updateProgress(card) {
+      const current = +card.dataset.current;
+      const total = +card.dataset.target;
+      const pct = Math.min(100, (current / total) * 100);
+      card.querySelector('.progress-bar-fill').style.width = pct + '%';
+      card.querySelector('.current-amount').textContent = current.toLocaleString('ru-RU') + ' ₽';
+    }
+
+    function addFunds(btn) {
+      const amount = prompt('Сколько добавить?');
+      const num = +amount;
+      if (!num || num <= 0) return;
+      const card = btn.closest('.goal-card');
+      card.dataset.current = Math.min(+card.dataset.target, +card.dataset.current + num);
+      updateProgress(card);
+    }
+
+    function editThisGoal(btn) {
+      const card = btn.closest('.goal-card');
+      openGoalForm(card);
+    }
+
+    function deleteGoal(btn) {
+      if (confirm('Удалить цель?')) {
+        btn.closest('.goal-card').remove();
+      }
+    }
+  </script>
+</body>
+</html>

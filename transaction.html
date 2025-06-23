@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Транзакции | FinanceTracker</title>
+    <link rel="stylesheet" href="transaction.css">
+</head>
+<body>
+    <div class="header">
+        <div class="logo">FinanceTracker</div>
+        <div class="links">
+            <a href="profil.html">Профиль</a>
+            <a href="chekc.html">Счета</a>
+            <a href="transactions.html" class="active">Транзакции</a>
+            <a href="goals.html">Цели</a>
+            <a href="otchet.html">Отчеты</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1>История транзакций</h1>
+        
+        <div class="filters">
+            <select id="accountFilter">
+                <option value="">Все счета</option>
+            </select>
+            <select id="typeFilter">
+                <option value="">Все типы</option>
+                <option value="income">Доходы</option>
+                <option value="expense">Расходы</option>
+            </select>
+            <button onclick="loadTransactions()">Применить</button>
+        </div>
+        
+        <div class="transactions-list" id="transactionsList">
+            <!-- Транзакции будут загружены динамически -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!localStorage.getItem('authToken')) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            await loadAccounts();
+            await loadTransactions();
+        });
+
+        async function loadAccounts() {
+            try {
+                const response = await fetch('/api/accounts', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+                
+                const accounts = await response.json();
+                const filter = document.getElementById('accountFilter');
+                
+                accounts.forEach(account => {
+                    const option = document.createElement('option');
+                    option.value = account.id;
+                    option.textContent = account.name;
+                    filter.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function loadTransactions() {
+            try {
+                const accountId = document.getElementById('accountFilter').value;
+                const type = document.getElementById('typeFilter').value;
+                
+                let url = '/api/transactions';
+                if (accountId || type) {
+                    url += '?';
+                    if (accountId) url += `account_id=${accountId}&`;
+                    if (type) url += `type=${type}&`;
+                }
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+                
+                const transactions = await response.json();
+                renderTransactions(transactions);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function renderTransactions(transactions) {
+            const container = document.getElementById('transactionsList');
+            container.innerHTML = '';
+            
+            transactions.forEach(transaction => {
+                const transactionEl = document.createElement('div');
+                transactionEl.className = `transaction ${transaction.type}`;
+                transactionEl.innerHTML = `
+                    <div class="transaction-info">
+                        <div class="transaction-description">${transaction.description || 'Нет описания'}</div>
+                        <div class="transaction-account">${transaction.account_name}</div>
+                        <div class="transaction-date">${new Date(transaction.created_at).toLocaleString()}</div>
+                    </div>
+                    <div class="transaction-amount">
+                        ${transaction.type === 'income' ? '+' : '-'}${transaction.amount.toFixed(2)} ₽
+                    </div>
+                `;
+                container.appendChild(transactionEl);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Профиль</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    .header {
+      background-color: #747474;
+      height: 7vh;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 10%;
+      color: white;
+    }
+
+    .logo {
+      font-size: min(4vw, 30px);
+      font-weight: 700;
+    }
+
+    .links {
+      display: flex;
+      gap: 30px;
+    }
+
+    a {
+      color: white;
+      text-decoration: none;
+      font-size: min(3vw, 16px);
+    }
+
+    a:hover {
+      color: #00d0ff;
+    }
+
+    .profile-container {
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .profile-container h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      text-align: center;
+    }
+
+    .profile-info {
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .profile-info span {
+      font-weight: bold;
+    }
+
+    .edit-btn {
+      background-color: #3d41d1;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      font-size: 14px;
+      border-radius: 8px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .edit-section {
+      margin-top: 10px;
+      display: none;
+      gap: 10px;
+    }
+
+    .edit-section input {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 70%;
+    }
+
+    .edit-section button {
+      padding: 6px 10px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">FinanceTracker</div>
+    <div class="links">
+      <a href="profil.html">Профиль</a>
+      <a href="chekc.html">Счета</a>
+      <a href="goals.html">Цели</a>
+      <a href="transaction.html">Транзакции</a>
+      <a href="otchet.html">Отчеты</a>
+    </div>
+  </div>
+
+  <div class="profile-container">
+    <h2>Профиль пользователя</h2>
+    <div class="profile-info">
+      <p><span>Имя:</span> <span id="username">Загрузка...</span></p>
+      <div class="edit-section" id="editSection">
+        <input type="text" id="newName" placeholder="Новое имя">
+        <button onclick="saveNewName()">Сохранить</button>
+      </div>
+      <button class="edit-btn" onclick="toggleEdit()">✏️ Изменить имя</button>
+
+      <p><span>Email:</span> <span id="email">Загрузка...</span></p>
+      <p><span>Дата регистрации:</span> <span id="regDate">Загрузка...</span></p>
+    </div>
+  </div>
+
+  <script>
+    // Пример данных пользователя
+    const user = {
+      name: "Иван Иванов",
+      email: "ivan@example.com",
+      registrationDate: "2024-12-01"
+    };
+
+    // Заполняем профиль
+    document.getElementById("username").textContent = user.name;
+    document.getElementById("email").textContent = user.email;
+    document.getElementById("regDate").textContent = new Date(user.registrationDate).toLocaleDateString("ru-RU");
+
+    // Показать/скрыть поле редактирования
+    function toggleEdit() {
+      const section = document.getElementById("editSection");
+      section.style.display = section.style.display === "flex" ? "none" : "flex";
+    }
+
+    // Сохранение нового имени
+    function saveNewName() {
+      const input = document.getElementById("newName");
+      const newName = input.value.trim();
+      if (newName.length === 0) {
+        alert("Имя не может быть пустым");
+        return;
+      }
+      user.name = newName;
+      document.getElementById("username").textContent = newName;
+      input.value = "";
+      toggleEdit();
+    }
+  </script>
+</body>
+</html>

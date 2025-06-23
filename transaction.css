@@ -1,0 +1,46 @@
+.transaction {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    margin-bottom: 10px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.transaction.income {
+    border-left: 4px solid #4CAF50;
+}
+
+.transaction.expense {
+    border-left: 4px solid #F44336;
+}
+
+.transaction-info {
+    flex-grow: 1;
+}
+
+.transaction-amount {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.transaction.income .transaction-amount {
+    color: #4CAF50;
+}
+
+.transaction.expense .transaction-amount {
+    color: #F44336;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filters select, .filters button {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
